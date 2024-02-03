@@ -39,7 +39,7 @@ const singleUploadCtrl = (req, res, next) => {
 
 // Upload API
 app.post("/api/upload", singleUploadCtrl, (req, res)=> {
-    
+    console
 })
 
 const port = 3002;
