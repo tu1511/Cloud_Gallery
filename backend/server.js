@@ -8,6 +8,10 @@ app.use(cors());
 
 
 const port = 3002;
+
+app.get('/api', (req, res)=> {
+    console.log("Hello!");
+})
 app.listen(port, () =>{
     console.log("Port is running on: ", port);
 });
