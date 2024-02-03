@@ -39,8 +39,11 @@ const singleUploadCtrl = (req, res, next) => {
 
 // Upload API
 app.post("/api/upload", singleUploadCtrl, (req, res)=> {
-    console
-})
+    console.log(req.file);
+    return res.send({
+        message: "Image sent",
+    });
+});
 
 const port = 3002;
 
