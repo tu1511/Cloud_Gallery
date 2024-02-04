@@ -1,7 +1,10 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
 const DatauriParser = require('datauri/parser');
+
 const app = express();
 
 app.use(express.json());
@@ -48,9 +51,20 @@ const formatBuffer = (file) => {
     );
 };
 
+// Setting cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.API_KEY, 
+    api_secret: process.env.API_SECRET,
+});
+
+cloudinaryUpload = (file) => 
+    cloudinary.uploader.upload(file, {
+        upload_preset: process.env.UPLOAD_PRESET,
+    });
 
 // Upload API
-app.post("/api/upload", singleUploadCtrl, (req, res)=> {
+app.post("/api/upload", singleUploadCtrl, async (req, res)=> {
     try {
         if(!req.file) {
             return res.status(422).send({
@@ -58,7 +72,13 @@ app.post("/api/upload", singleUploadCtrl, (req, res)=> {
             });
         }
         // convert stream to base64 format
-        const file64 = formatBuffer(req.file)
+        const file64 = formatBuffer(req.file);
+        const uploadResult = await cloudinaryUpload(file64.content);
+        return res.status(200).json({
+            cloudinaryID: uploadResult.public_id,
+            url: uploadResult.secure_url,
+            message: "Upload OK!",
+        });
     } catch (error) {
         return res.status(422).send({
             message: error.message,
