@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
-const multer = require("multer")
+const multer = require("multer");
+const DatauriParser = require('datauri/parser');
 const app = express();
 
 app.use(express.json());
@@ -37,12 +38,32 @@ const singleUploadCtrl = (req, res, next) => {
     });
 };
 
+// use datauri to stream buffer
+const parser = new DatauriParser();
+const path = require("path");
+const formatBuffer = (file) => {
+    return parser.format(
+        path.extname(file.originalname).toString().toLowerCase(),
+        file.buffer
+    );
+};
+
+
 // Upload API
 app.post("/api/upload", singleUploadCtrl, (req, res)=> {
-    console.log(req.file);
-    return res.send({
-        message: "Image sent",
-    });
+    try {
+        if(!req.file) {
+            return res.status(422).send({
+                message: "There is error when uploading",
+            });
+        }
+        // convert stream to base64 format
+        const file64 = formatBuffer(req.file)
+    } catch (error) {
+        return res.status(422).send({
+            message: error.message,
+        });
+    }
 });
 
 const port = 3002;
