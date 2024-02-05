@@ -3,5 +3,9 @@ import {RouterView } from 'vue-router'
 </script>
 
 <template>
-  <RouterView />
+<div class="flex flex-col h-screen">
+  <main>
+      <RouterView />
+  </main>
+</div>
 </template>
