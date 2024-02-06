@@ -24,7 +24,9 @@
           <!-- Image Preview -->
           <div class="p-4">
             <h3 class="text-semibold text-center mb-2">Image Preview</h3>
+            <AlertMessage v-if="error" :message ="error"/>
             <img :src="filePreview" alt="" v-if="filePreview" class="bg-white p-1 border rounded">
+            <p v-if="fileSize">{{ fileSize }}</p>
           </div>
         </div>
       </div>
@@ -34,32 +36,61 @@
 
 <script setup>
   import { ref } from "vue";
+  import AlertMessage from "@/components/AlertMessage.vue";
 
   const file = ref(null);
   const filePreview = ref(null);
+  const fileSize = ref(0.0);
   const error = ref(null);
 
   // handleFileChange
   const handleFileChange = (e) => {
+      error.value = null;
       file.value = e.target.files[0];
       getImagePreviews(file.value);
   }
 
+  // format image size to human-readable unit
+  function formatBytes(size, decimals = 2) {
+    if(size === 0) return "0 bytes";
+      const k = 1024;
+      const dm = decimals < 0 ? 0 : decimals;
+      const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+      const i = Math.floor(Math.log(size) / Math.log(k));
+      return parseFloat((size / Math.pow(k, i)).toFixed(dm)+ " " + sizes[i]);
+  };
   // get image preview
   const getImagePreviews = (image) => {
+    // kiểm tra .file và kích thước
     if (/\.(jpe?g|png)$/i.test(image.name) && image.size < 1000000) {
         let reader = new FileReader();
         reader.onloadend = (e) => {
           filePreview.value = e.target.result;
+          fileSize.value = formatBytes(image.size);
         };
         reader.readAsDataURL(image);
     } else {
       error.value = "File is not supported for size bigger than 1 MB!";
-      
+      filePreview.value = null;
+      fileSize.value = null;
     }
-  };
+  }
 
   // submit upload
+  const submitUpload = () => {
+    if(!file.value) return;
+    let reader = new FileReader();
+    reader.readAsDataURL(file.value);
+    reader.onloadend = () => {
+      uploadImage(reader.result);
+    };
+  };
 
   // uploadImage connect  with upload API
+  const uploadImage = async () => {
+    
+  }
+
+
+
 </script>
