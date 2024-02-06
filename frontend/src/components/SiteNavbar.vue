@@ -19,7 +19,7 @@
             </div>
         </div>
 
-        <div class="menu w-full lg:block flex-grow lg:flex lg:items-center lg:w-auto lg:px-3 px-8">
+        <div class="menu w-full block flex-grow lg:flex lg:items-center lg:w-auto lg:px-3 px-8">
             <div class="text-md font-bold text-blue-700 lg:flex-grow">
                 <router-link  to="/"
                     class="block mt-4 lg:inline-block lg:mt-0 hover:text-white px-4 py-2 rounded hover:bg-blue-700 mr-2">
@@ -41,5 +41,4 @@
 </script>
 
 <style>
-
 </style>
