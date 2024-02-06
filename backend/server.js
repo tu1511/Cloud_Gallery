@@ -65,16 +65,23 @@ cloudinaryUpload = (file) =>
 
 // Upload API
 app.post("/api/upload", singleUploadCtrl, async (req, res)=> {
+    const uploadFile = req.body.file || req.file;
     try {
-        if(!req.file) {
+        if(!uploadFile) {
             return res.status(422).send({
                 message: "There is error when uploading",
             });
         }
+        let uploadResult;
+        if(!uploadFile.buffer) {
+            uploadResult = await cloudinaryUpload(uploadFile);
+        } else {
+            const file64 = formatBuffer(req.file);
+            uploadResult = await cloudinaryUpload(file64.content);
+        }
+
         // convert stream to base64 format
-        const file64 = formatBuffer(req.file);
-        const uploadResult = await cloudinaryUpload(file64.content);
-        return res.status(200).json({
+        return res.json({
             cloudinaryID: uploadResult.public_id,
             url: uploadResult.secure_url,
             message: "Upload OK!",

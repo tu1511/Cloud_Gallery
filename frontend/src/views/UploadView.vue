@@ -36,11 +36,13 @@
 
 <script setup>
   import { ref } from "vue";
+  import axios from "axios";
   import AlertMessage from "@/components/AlertMessage.vue";
 
   const file = ref(null);
   const filePreview = ref(null);
   const fileSize = ref(0.0);
+  const uploadStatus = ref(false);
   const error = ref(null);
 
   // handleFileChange
@@ -87,10 +89,23 @@
   };
 
   // uploadImage connect  with upload API
-  const uploadImage = async () => {
-    
+  const uploadImage = async (file) => {
+    const formData = new FormData();
+    if(file) formData.append("file", file);
+
+    try {
+      const response = await axios({
+        method: "POST",
+        url: "http://localhost:3002/api/upload",
+        data: formData,
+        headers: {
+          "Content-Type": "multipart/form-data"
+        },
+      });
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
   }
-
-
 
 </script>
