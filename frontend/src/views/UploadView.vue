@@ -18,7 +18,9 @@
                   </div>
                 </div>
                 <button class="w-full px-6 py-2.5 bg-green-600 text-white font-medium text-xs rounded shadow-md"
-                style="submit" @click.prevent="submitUpload">Upload</button>
+                :class="uploadStatus && 'bg-gray-600'"
+                :disabled="uploadStatus"
+                style="submit" @click.prevent="submitUpload">{{ uploadStatus ? "Uploading" : "Upload" }}</button>
             </form>
           </div>
           <!-- Image Preview -->
@@ -37,6 +39,7 @@
 <script setup>
   import { ref } from "vue";
   import axios from "axios";
+  import { useRouter } from "vue-router";
   import AlertMessage from "@/components/AlertMessage.vue";
 
   const file = ref(null);
@@ -44,6 +47,8 @@
   const fileSize = ref(0.0);
   const uploadStatus = ref(false);
   const error = ref(null);
+
+  const router = useRouter();
 
   // handleFileChange
   const handleFileChange = (e) => {
@@ -90,6 +95,7 @@
 
   // uploadImage connect  with upload API
   const uploadImage = async (file) => {
+    uploadStatus.value = true;
     const formData = new FormData();
     if(file) formData.append("file", file);
 
@@ -102,9 +108,15 @@
           "Content-Type": "multipart/form-data"
         },
       });
-      console.log(response);
+      if(response.data.url) {
+        error.value = null;
+        uploadStatus.value = false;
+        // chuyển về homepage
+        router.push("/")
+      }
     } catch (error) {
-      console.log(error);
+      error.value = error;
+      uploadStatus.status = false;
     }
   }
 
