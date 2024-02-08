@@ -72,7 +72,18 @@ getImages = async () => {
 // Get Images API
 app.get("/api/photos", async(req, res)=> {
     const respose = await getImages();
-    console.log(respose);
+    const results = {
+        images[],
+        next_cursor: null,
+    };
+
+    respose.resources.forEach(item => {
+        results.images.push({
+            public_id: item.public_id,
+            created_at: item.created_at,
+            secure_url = item.secure_url
+        });
+    });
 })
 
 // Upload API
