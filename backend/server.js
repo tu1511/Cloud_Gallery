@@ -1,9 +1,11 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const multer = require("multer");
-const cloudinary = require("cloudinary").v2;
-const DatauriParser = require('datauri/parser');
+
+const { cloudinaryUpload, getImages } = require("./services/cloudinaryServices");
+
+const { formatBuffer } = require("./services/datauriServices");
+const { singleUploadCtrl } = require("./services/multerServices");
 
 const app = express();
 
@@ -11,68 +13,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
 app.use(cors());
 
-// Multer settings
-const ALLOWED_FORMATS = ["image/jpeg", "image/png", "image/jpg"]
+
 
 // Use memoryStorage for multer upload
-const storage = multer.memoryStorage();
 
-const upload = multer({
-    storage,
-    fileFilter: function(req, file, cb) {
-        if(ALLOWED_FORMATS.includes(file.mimetype)) {
-            cb(null, true);
-        }
-        else {
-            cb(new Error("Not supported file type"), false);
-        }
-    },
-});
 
-const singleUpload = upload.single("file");
-const singleUploadCtrl = (req, res, next) => {
-    singleUpload(req, res, (error) => {
-        if(error) {
-            return res.status(422).send({
-                message: "Image upload failed",
-            });
-        }
-        next();
-    });
-};
+
 
 // use datauri to stream buffer
-const parser = new DatauriParser();
-const path = require("path");
-const formatBuffer = (file) => {
-    return parser.format(
-        path.extname(file.originalname).toString().toLowerCase(),
-        file.buffer
-    );
-};
 
-// Setting cloudinary
-cloudinary.config({
-    cloud_name: process.env.CLOUD_NAME,
-    api_key: process.env.API_KEY, 
-    api_secret: process.env.API_SECRET,
-});
 
-cloudinaryUpload = (file) => 
-    cloudinary.uploader.upload(file, {
-        upload_preset: process.env.UPLOAD_PRESET,
-    });
-
-// Get images from folder using cloudinary Search API
-getImages = async (next_cursor) => {
-    const resources = await cloudinary.search
-    .expression("folder:dog_pictures")
-    .max_results(20)
-    .sort_by("uploaded_at", "desc")
-    .next_cursor(next_cursor)
-    .execute();
-    return resources;
-}
 
 // Get Images API
 app.get("/api/photos", async(req, res)=> {

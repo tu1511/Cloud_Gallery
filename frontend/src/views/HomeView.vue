@@ -30,7 +30,7 @@
 
   const fetchImages = async () => {
     try {
-        const response = await axios.get("http://localhost:3002/api/photos");
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/photos` );
         images.value = response.data.results.images;
 
         if(response.data.results.next_cursor) {
@@ -45,13 +45,13 @@
     const params = new URLSearchParams();
     if(next.value) {
       params.append("next_cursor", next.value)
-      const response = await axios.get(`http://localhost:3002/api/photos?${params}`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/photos?${params}`);
       if(response.data.results) {
         for (let i = 0; i < response.data.results.images.length; i++) {
           images.value.push(response.data.results.images[i]);
         }
-        if(response.data.next_cursor) {
-          next.value = response.data.next_cursor;
+        if(response.data.results.next_cursor) {
+          next.value = response.data.results.next_cursor;
           params.delete("next_cursor")
         } else {
           params.delete("next_cursor");

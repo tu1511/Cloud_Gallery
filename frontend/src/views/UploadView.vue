@@ -102,7 +102,7 @@
     try {
       const response = await axios({
         method: "POST",
-        url: "http://localhost:3002/api/upload",
+        url: `${import.meta.env.VITE_API_URL}/api/upload`,
         data: formData,
         headers: {
           "Content-Type": "multipart/form-data"
