@@ -64,16 +64,21 @@ cloudinaryUpload = (file) =>
     });
 
 // Get images from folder using cloudinary Search API
-getImages = async () => {
-    const resources = await cloudinary.search.expression("folder:dog_pictures").max_results(20).sort_by("uploaded_at", "desc").execute();
+getImages = async (next_cursor) => {
+    const resources = await cloudinary.search
+    .expression("folder:dog_pictures")
+    .max_results(20)
+    .sort_by("uploaded_at", "desc")
+    .next_cursor(next_cursor)
+    .execute();
     return resources;
 }
 
 // Get Images API
 app.get("/api/photos", async(req, res)=> {
-    const respose = await getImages();
+    const respose = await getImages(req.query.next_cursor || "");
     const results = {
-        images[],
+        images: [],
         next_cursor: null,
     };
 
@@ -81,9 +86,16 @@ app.get("/api/photos", async(req, res)=> {
         results.images.push({
             public_id: item.public_id,
             created_at: item.created_at,
-            secure_url = item.secure_url
+            secure_url: item.secure_url
         });
     });
+    if(respose.next_cursor) {
+        results.next_cursor = respose.next_cursor;
+    }
+
+    return res.json({
+        results,
+    })
 })
 
 // Upload API
