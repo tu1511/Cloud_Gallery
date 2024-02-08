@@ -63,6 +63,18 @@ cloudinaryUpload = (file) =>
         upload_preset: process.env.UPLOAD_PRESET,
     });
 
+// Get images from folder using cloudinary Search API
+getImages = async () => {
+    const resources = await cloudinary.search.expression("folder:dog_pictures").max_results(20).sort_by("uploaded_at", "desc").execute();
+    return resources;
+}
+
+// Get Images API
+app.get("/api/photos", async(req, res)=> {
+    const respose = await getImages();
+    console.log(respose);
+})
+
 // Upload API
 app.post("/api/upload", singleUploadCtrl, async (req, res)=> {
     const uploadFile = req.body.file || req.file;
