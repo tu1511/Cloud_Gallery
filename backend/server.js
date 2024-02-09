@@ -13,16 +13,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
 app.use(cors());
 
-
-
 // Use memoryStorage for multer upload
 
-
-
-
 // use datauri to stream buffer
-
-
 
 // Get Images API
 app.get("/api/photos", async(req, res)=> {

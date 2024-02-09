@@ -20,7 +20,7 @@
                 <button class="w-full px-6 py-2.5 bg-green-600 text-white font-medium text-xs rounded shadow-md"
                 :class="uploadStatus && 'bg-gray-600'"
                 :disabled="uploadStatus"
-                style="submit" @click.prevent="submitUpload">{{ uploadStatus ? "Uploading" : "Upload" }}</button>
+                type="submit" @click.prevent="submitUpload">{{ uploadStatus ? "Uploading" : "Upload" }}</button>
             </form>
           </div>
           <!-- Image Preview -->
