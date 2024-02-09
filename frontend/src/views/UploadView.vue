@@ -112,7 +112,7 @@
         error.value = null;
         uploadStatus.value = false;
         // chuyển về homepage
-        router.push("/")
+        router.push("/");
       }
     } catch (error) {
       error.value = error;
